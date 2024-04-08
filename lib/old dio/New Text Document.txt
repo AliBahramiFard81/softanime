@@ -1,0 +1,167 @@
+import 'package:dio/dio.dart';
+import 'package:main/models/anime_manga_genre_model.dart';
+import 'package:main/models/anime_popular_episodes_model.dart';
+import 'package:main/models/anime_quotes_model.dart';
+import 'package:main/models/home_page_model.dart';
+import 'package:main/models/random_anime_model.dart';
+import 'package:main/models/recent_anime_episodes_model.dart';
+import 'package:main/models/recommended_anime_manga_model.dart';
+import 'package:main/models/top_actors_model.dart';
+import 'package:main/models/top_anime_manga_model.dart';
+import 'package:main/models/top_character_model.dart';
+import 'package:main/models/top_reviews_model.dart';
+
+class HomePageService {
+  final dio = Dio();
+  Future<HomePageModel?> getHomePageContent() async {
+    // URLs
+    const randomUrl = 'https://api.jikan.moe/v4/random/anime';
+    const recommendedAnimeUrl =
+        'https://api.jikan.moe/v4/recommendations/anime';
+    const topAnimeUrl = 'https://api.jikan.moe/v4/top/anime?page=1';
+    const recommendedMangaUrl =
+        'https://api.jikan.moe/v4/recommendations/manga';
+    const topMangaUrl = 'https://api.jikan.moe/v4/top/manga';
+    const animeGenreUrl = 'https://api.jikan.moe/v4/genres/anime';
+    const mangaGenreUrl = 'https://api.jikan.moe/v4/genres/manga';
+    const topCharactersUrl = 'https://api.jikan.moe/v4/top/characters';
+    const topActorsUrl = 'https://api.jikan.moe/v4/top/people';
+    const topReviewUrl = 'https://api.jikan.moe/v4/top/reviews';
+    const animeQuotesUrl = 'https://animechan.xyz/api/quotes';
+    const recentEpisodesUrl = 'https://api.jikan.moe/v4/watch/episodes';
+    const popularAnimeEpisodesUrl =
+        'https://api.jikan.moe/v4/watch/episodes/popular';
+    try {
+      // RANDOM ANIME SERVICE
+      List<Response> randomResponse = await Future.wait([
+        dio.get(randomUrl),
+        dio.get(randomUrl),
+        dio.get(randomUrl),
+      ]);
+      final randomModel = [
+        RandomAnimeModel.fromJson(randomResponse[0].data),
+        RandomAnimeModel.fromJson(randomResponse[1].data),
+        RandomAnimeModel.fromJson(randomResponse[2].data),
+      ];
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      // RECOMMENDED ANIME SERVICE
+      Response recommendedResponse = await dio.get(recommendedAnimeUrl);
+      final recommendedModel = List.generate(
+        (recommendedResponse.data['data'] as List<dynamic>).length * 2,
+        (index) => RecommendedAnimeMangaModel.fromJson(
+          recommendedResponse.data,
+          (index / 2).floor(),
+          index.isEven ? 0 : 1,
+        ),
+      );
+
+      // TOP ANIME SERVICE
+      Response topAnimeResponse = await dio.get(topAnimeUrl);
+      final topAnimeModel = List.generate(10, (index) {
+        return TopAnimeMangaModel.fromJson(
+            topAnimeResponse.data['data'][index]);
+      });
+
+      // RECOMMENDED MANGA SERVICE
+      Response recommendedMangaResponse = await dio.get(recommendedMangaUrl);
+      final recommendedMangaModel = List.generate(
+        (recommendedMangaResponse.data['data'] as List<dynamic>).length * 2,
+        (index) => RecommendedAnimeMangaModel.fromJson(
+          recommendedMangaResponse.data,
+          (index / 2).floor(),
+          index.isEven ? 0 : 1,
+        ),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      // TOP MANGA SERVICE
+      Response topMangaResponse = await dio.get(topMangaUrl);
+      final topMangaModel = List.generate(10, (index) {
+        return TopAnimeMangaModel.fromJson(
+            topMangaResponse.data['data'][index]);
+      });
+
+      // GENRE SERVICE
+      List<Response> genreResponse = await Future.wait([
+        dio.get(animeGenreUrl),
+        dio.get(mangaGenreUrl),
+      ]);
+      final animeGenreModel = List.generate(20, (index) {
+        return AnimeMangaGenreModel.fromJson(
+            genreResponse[0].data['data'][index]);
+      });
+
+      final mangaGenreModel = List.generate(20, (index) {
+        return AnimeMangaGenreModel.fromJson(
+            genreResponse[1].data['data'][index]);
+      });
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      // TOP CHARACTERS
+      Response topCharacterResponse = await dio.get(topCharactersUrl);
+      final topCharacterModel = List.generate(10, (index) {
+        return TopCharacterModel.fromJson(
+            topCharacterResponse.data['data'][index]);
+      });
+
+      // TOP ACTORS
+      Response topActorsResponse = await dio.get(topActorsUrl);
+      final topActorsModel = List.generate(10, (index) {
+        return TopActorsModel.fromJson(topActorsResponse.data['data'][index]);
+      });
+
+      // TOP REVIEWS
+      final Response topReviewsResponse = await dio.get(topReviewUrl);
+      final topReviewsModel = List.generate(10, (index) {
+        return TopReviewsModel.fromJson(topReviewsResponse.data['data'][index]);
+      });
+
+      // ANIME QUOTES SERVICE
+      final Response animeQuoteResponse = await dio.get(animeQuotesUrl);
+      final animeQuoteModel = List.generate(10, (index) {
+        return AnimeQuotesModel.fromJson(animeQuoteResponse.data[index]);
+      });
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+
+      //  RECENT ANIME EPISODES SERVICE
+      Response resentAnimeEpisodesResponse = await dio.get(recentEpisodesUrl);
+      final recentAnimeEpisodeModel = List.generate(10, (index) {
+        return RecentAnimeEpisodesModel.fromJson(
+            resentAnimeEpisodesResponse.data['data'][index]);
+      });
+
+      // POPULAR ANIME EPISODES SERVICE
+      Response popularAnimeEpisodeResponse =
+          await dio.get(popularAnimeEpisodesUrl);
+      final popularAnimeEpisodeModel = List.generate(10, (index) {
+        return AnimePopularEpisodeModel.fromJson(
+            popularAnimeEpisodeResponse.data['data'][index]);
+      });
+
+      return HomePageModel(
+        randomAnimeModel: randomModel,
+        recommendedAnimeModel: recommendedModel,
+        topAnimeModel: topAnimeModel,
+        recommendedMangaModel: recommendedMangaModel,
+        topMangaModel: topMangaModel,
+        animeGenreModel: animeGenreModel,
+        mangaGenreModel: mangaGenreModel,
+        topCharacterModel: topCharacterModel,
+        topActorModel: topActorsModel,
+        topReviewsModel: topReviewsModel,
+        animeQuotesModel: animeQuoteModel,
+        recentAnimeEpisodeModel: recentAnimeEpisodeModel,
+        popularAnimeEpisodeModel: popularAnimeEpisodeModel,
+      );
+    } catch (e) {
+      // ignore: cast_from_null_always_fails
+      print(e.toString());
+      return null;
+    }
+  }
+}
