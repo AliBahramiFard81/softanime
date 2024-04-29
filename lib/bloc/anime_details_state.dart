@@ -40,3 +40,13 @@ final class AnimeCharacterPicturesSuccess extends AnimeDetailsState {
   final List<AnimeCharacterImageModel> animeCharacterImageModel;
   AnimeCharacterPicturesSuccess({required this.animeCharacterImageModel});
 }
+
+final class MangaImageGallerySuccess extends AnimeDetailsState {
+  final List<MangaImageGalleryModel> mangaImageGalleryModel;
+  MangaImageGallerySuccess({required this.mangaImageGalleryModel});
+}
+
+final class MangaReviewsSuccess extends AnimeDetailsState {
+  final List<MangaReviewsModel> animeReviewsModel;
+  MangaReviewsSuccess({required this.animeReviewsModel});
+}

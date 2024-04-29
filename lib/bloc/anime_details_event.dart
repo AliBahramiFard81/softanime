@@ -51,3 +51,13 @@ final class GetAnimeCharacterImageGallery extends AnimeDetailsEvent {
   final int id;
   GetAnimeCharacterImageGallery({required this.id});
 }
+
+final class GetMangaPageImageGallery extends AnimeDetailsEvent {
+  final int id;
+  GetMangaPageImageGallery({required this.id});
+}
+
+final class GetMangaPageReviews extends AnimeDetailsEvent {
+  final int id;
+  GetMangaPageReviews({required this.id});
+}
