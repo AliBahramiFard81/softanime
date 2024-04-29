@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:main/bloc/anime_character_actor_bloc.dart';
+import 'package:main/bloc/anime_details_bloc.dart';
 import 'package:main/bloc/manga_bloc.dart';
 import 'package:main/common/font_styles.dart';
 import 'package:main/common/navigation_bloc_data.dart';
 import 'package:main/pages/characters_page.dart';
+import 'package:main/widgets/anime_manga_page_detail_button.dart';
 import 'package:main/widgets/anime_manga_page_header.dart';
 import 'package:main/widgets/anime_manga_page_info.dart';
 import 'package:main/widgets/anime_manga_page_poster.dart';
 import 'package:main/widgets/anime_manga_page_rating.dart';
 import 'package:main/widgets/anime_manga_page_title_header.dart';
+import 'package:main/widgets/anime_page_details.dart';
 import 'package:main/widgets/custom_internet_image.dart';
 import 'package:sizer/sizer.dart';
 
@@ -248,6 +251,37 @@ class MangaPage extends StatelessWidget {
                         },
                       ),
                     ),
+                    AnimeMangaPageDetailButton(
+                      title: 'image gallery',
+                      onPressed: () {
+                        showAdaptiveDialog(
+                          context: context,
+                          builder: (context) => const ImageGallery(),
+                        );
+                        BlocProvider.of<AnimeDetailsBloc>(context).add(
+                          GetMangaPageImageGallery(
+                              id: state.mangaMainModel.mangaModel.id),
+                        );
+                      },
+                    ),
+                    AnimeMangaPageDetailButton(
+                      title: 'users reviews',
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Reviews(
+                                poster: state.mangaMainModel.mangaModel.poster,
+                                title: state.mangaMainModel.mangaModel.title,
+                                id: state.mangaMainModel.mangaModel.id,
+                              ),
+                            ));
+
+                        BlocProvider.of<AnimeDetailsBloc>(context).add(
+                            GetMangaPageReviews(
+                                id: state.mangaMainModel.mangaModel.id));
+                      },
+                    )
                   ],
                 );
               } else {

@@ -2,7 +2,7 @@ import 'package:main/models/anime_model.dart';
 
 class MangaMainModel {
   final MangaModel mangaModel;
-  final List<Characters> charactersModel;
+  final List<MangaCharacters> charactersModel;
   final List<MangaRecommendations> mangaRecommendations;
   MangaMainModel({
     required this.mangaModel,
@@ -61,19 +61,19 @@ class MangaModel {
   }
 }
 
-class Characters {
+class MangaCharacters {
   final int id;
   final String image;
   final String name;
 
-  Characters({
+  MangaCharacters({
     required this.id,
     required this.image,
     required this.name,
   });
 
-  factory Characters.fromJson(Map<String, dynamic> json) {
-    return Characters(
+  factory MangaCharacters.fromJson(Map<String, dynamic> json) {
+    return MangaCharacters(
       id: json['character']['mal_id'],
       image: json['character']['images']['jpg']['image_url'],
       name: json['character']['name'],
@@ -97,6 +97,47 @@ class MangaRecommendations {
       id: json['mal_id'],
       poster: json['images']['jpg']['large_image_url'],
       title: json['title'],
+    );
+  }
+}
+
+class MangaImageGalleryModel {
+  final String url;
+  MangaImageGalleryModel({required this.url});
+
+  factory MangaImageGalleryModel.fromJson(Map<String, dynamic> json) {
+    return MangaImageGalleryModel(url: json['jpg']['large_image_url']);
+  }
+}
+
+class MangaReviewsModel {
+  final int id;
+  final String date;
+  final String review;
+  final int score;
+  final String profile;
+  final String username;
+  final bool hasNextPage;
+  MangaReviewsModel({
+    required this.id,
+    required this.date,
+    required this.review,
+    required this.score,
+    required this.profile,
+    required this.username,
+    required this.hasNextPage,
+  });
+
+  factory MangaReviewsModel.fromJson(
+      Map<String, dynamic> json, bool hasNextPage) {
+    return MangaReviewsModel(
+      id: json['mal_id'],
+      date: json['date'],
+      review: json['review'],
+      score: json['score'],
+      profile: json['user']['images']['jpg']['image_url'],
+      username: json['user']['username'],
+      hasNextPage: hasNextPage,
     );
   }
 }

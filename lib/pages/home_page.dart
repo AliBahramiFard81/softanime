@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:main/bloc/anime_bloc.dart';
 import 'package:main/bloc/more_bloc.dart';
-import 'package:main/common/font_styles.dart';
 import 'package:main/cubit/carousel_cubit.dart';
 import 'package:main/cubit/quotes_cubit.dart';
-import 'package:main/pages/loading_page.dart';
 import 'package:main/pages/more_page.dart';
+import 'package:main/widgets/home_page_appbar.dart';
 import 'package:main/widgets/home_page_carousel.dart';
 import 'package:main/widgets/home_page_genres.dart';
 import 'package:main/widgets/home_page_item_list.dart';
@@ -15,7 +14,6 @@ import 'package:main/widgets/home_page_list_header.dart';
 import 'package:main/widgets/home_page_quote_carousel.dart';
 import 'package:main/widgets/home_page_review_carousel.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,8 +21,6 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
-enum Genre { anime, manga }
 
 enum HomePageListType { anime, manga, character, actor }
 
@@ -41,35 +37,39 @@ class _HomePageState extends State<HomePage> {
               .showSnackBar(SnackBar(content: Text(state.error)));
           context.read<AnimeBloc>().add(GetHomePage());
         }
-        if (state is AnimeHomeSuccess) {
-          final carouselCubit = BlocProvider.of<CarouselCubit>(context);
-          carouselCubit.carouselProgressStart();
-        }
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () async {
-              final supabase = Supabase.instance.client;
-              await supabase.auth.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoadingPage(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.search_rounded),
-          ),
-          title: Text(
-            'SoftAnime',
-            style: homePageAppbarText,
-          ),
-          centerTitle: true,
-        ),
+        appBar: const HomePageAppBar(),
         body: CustomMaterialIndicator(
           onRefresh: () async {
-            context.read<AnimeBloc>().add(GetHomePage());
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    BlocListener<AnimeBloc, AnimeState>(
+                  listener: (context, state) {
+                    if (state is AnimeHomeSuccess) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
+                      );
+                      final carouselCubit =
+                          BlocProvider.of<CarouselCubit>(context);
+                      carouselCubit.carouselProgressStart();
+                    }
+                  },
+                  child: const Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+            BlocProvider.of<AnimeBloc>(context).add(GetHomePage());
           },
           indicatorBuilder: (context, controller) {
             return const Icon(
