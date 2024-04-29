@@ -7,6 +7,7 @@ import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:iconify_flutter/icons/simple_icons.dart';
 import 'package:main/bloc/anime_bloc.dart';
 import 'package:main/bloc/anime_page_bloc.dart';
+import 'package:main/common/navigation_bloc_data.dart';
 import 'package:main/cubit/carousel_cubit.dart';
 import 'package:main/pages/anime_page.dart';
 import 'package:main/widgets/custom_internet_image.dart';
@@ -48,6 +49,8 @@ class HomePageCarousel extends StatelessWidget {
                               id: state
                                   .homePageModel.randomAnimeModel[index].id,
                             ));
+                        animePagesId.add(
+                            state.homePageModel.randomAnimeModel[index].id);
                       },
                       child: Stack(
                         children: [

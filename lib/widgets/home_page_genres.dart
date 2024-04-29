@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:main/bloc/anime_bloc.dart';
+import 'package:main/bloc/genres_page_bloc.dart';
 import 'package:main/common/font_styles.dart';
+import 'package:main/cubit/all_genres_cubit.dart';
 import 'package:main/cubit/genre_grid_cubit.dart';
-import 'package:main/pages/home_page.dart';
+import 'package:main/pages/all_genres_page.dart';
+import 'package:main/pages/genre_page.dart';
 import 'package:sizer/sizer.dart';
+
+enum Genre { anime, manga }
 
 class HomePageGenre extends StatelessWidget {
   const HomePageGenre({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Genre genre = Genre.anime;
     return BlocBuilder<GenreGridCubit, GenreGridState>(
       builder: (context, state) {
         return Container(
@@ -64,6 +70,7 @@ class HomePageGenre extends StatelessWidget {
                   onSelectionChanged: (p0) {
                     final genreCubit = BlocProvider.of<GenreGridCubit>(context);
                     genreCubit.genreChanged(p0.first);
+                    genre = p0.first;
                   },
                 ),
               ),
@@ -94,7 +101,26 @@ class HomePageGenre extends StatelessWidget {
                                   ),
                                   padding: const EdgeInsets.all(0),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => GenrePage(
+                                        id: state.homePageModel
+                                            .animeGenreModel[index].id,
+                                        type: 'anime',
+                                        title: state.homePageModel
+                                            .animeGenreModel[index].name,
+                                      ),
+                                    ),
+                                  );
+                                  BlocProvider.of<GenresPageBloc>(context).add(
+                                    GetGenreTitle(
+                                        id: state.homePageModel
+                                            .animeGenreModel[index].id,
+                                        type: 'anime'),
+                                  );
+                                },
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -140,7 +166,26 @@ class HomePageGenre extends StatelessWidget {
                                   ),
                                   padding: const EdgeInsets.all(0),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => GenrePage(
+                                        id: state.homePageModel
+                                            .animeGenreModel[index].id,
+                                        type: 'manga',
+                                        title: state.homePageModel
+                                            .animeGenreModel[index].name,
+                                      ),
+                                    ),
+                                  );
+                                  BlocProvider.of<GenresPageBloc>(context).add(
+                                    GetGenreTitle(
+                                        id: state.homePageModel
+                                            .animeGenreModel[index].id,
+                                        type: 'manga'),
+                                  );
+                                },
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -174,7 +219,17 @@ class HomePageGenre extends StatelessWidget {
               SizedBox(
                 width: 100.w,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllGenresPage(
+                            type: genre == Genre.anime ? 'anime' : 'manga'),
+                      ),
+                    );
+                    BlocProvider.of<AllGenresCubit>(context)
+                        .getAllGenres(genre == Genre.anime ? 'anime' : 'manga');
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -5,14 +5,20 @@ import 'package:main/bloc/anime_character_actor_bloc.dart';
 import 'package:main/bloc/anime_details_bloc.dart';
 import 'package:main/bloc/anime_page_bloc.dart';
 import 'package:main/bloc/auth_bloc.dart';
+import 'package:main/bloc/genres_page_bloc.dart';
 import 'package:main/bloc/manga_bloc.dart';
 import 'package:main/bloc/more_bloc.dart';
+import 'package:main/bloc/search_page_bloc.dart';
+import 'package:main/cubit/all_genres_cubit.dart';
 import 'package:main/cubit/anime_details_cubit.dart';
 import 'package:main/cubit/background_image_cubit.dart';
 import 'package:main/cubit/carousel_cubit.dart';
 import 'package:main/cubit/genre_grid_cubit.dart';
 import 'package:main/cubit/login_cubit.dart';
 import 'package:main/cubit/quotes_cubit.dart';
+import 'package:main/cubit/search_history_cubit.dart';
+import 'package:main/cubit/search_type_cubit.dart';
+import 'package:main/database/main_database.dart';
 import 'package:main/pages/loading_page.dart';
 import 'package:sizer/sizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -35,7 +41,6 @@ Future<void> main() async {
       retryAttempts: 10,
     ),
   );
-
   runApp(const MyApp());
 }
 
@@ -59,6 +64,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AnimeCharacterActorBloc()),
         BlocProvider(create: (context) => MangaBloc()),
         BlocProvider(create: (context) => MoreBloc()),
+        BlocProvider(create: (context) => GenresPageBloc()),
+        BlocProvider(create: (context) => AllGenresCubit()),
+        BlocProvider(create: (context) => SearchPageBloc()),
+        BlocProvider(create: (context) => SearchTypeCubit()),
+        BlocProvider(create: (context) => SearchHistoryCubit()),
       ],
       child: Sizer(
         builder: (context, orientation, deviceType) {

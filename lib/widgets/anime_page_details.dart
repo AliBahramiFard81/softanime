@@ -310,6 +310,14 @@ class ImageGallery extends StatelessWidget {
                   numOfShowImages: 6,
                 );
               }
+            } else if (state is MangaImageGallerySuccess) {
+              return GalleryImage(
+                imageUrls: List.generate(
+                  state.mangaImageGalleryModel.length,
+                  (index) => state.mangaImageGalleryModel[index].url,
+                ),
+                numOfShowImages: 6,
+              );
             } else {
               return const Center(
                 child: CircularProgressIndicator(),

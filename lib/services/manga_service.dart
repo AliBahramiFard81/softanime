@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:main/models/anime_model.dart';
 import 'package:main/models/manga_model.dart';
 
 class MangaService {
@@ -20,7 +21,7 @@ class MangaService {
       final charactersModel = List.generate(
           (jsonDecode(charactersResponse.body)['data'] as List<dynamic>).length,
           (index) {
-        return Characters.fromJson(
+        return MangaCharacters.fromJson(
             jsonDecode(charactersResponse.body)['data'][index]);
       });
 
@@ -39,6 +40,40 @@ class MangaService {
       );
 
       return mangaMainModel;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<List<MangaImageGalleryModel>?> getMangaImageGallery() async {
+    final url = 'https://api.jikan.moe/v4/manga/$id/pictures';
+    try {
+      final response = await http.get(Uri.parse(url));
+      final images = List.generate(
+          (jsonDecode(response.body)['data'] as List<dynamic>).length, (index) {
+        return MangaImageGalleryModel.fromJson(
+            jsonDecode(response.body)['data'][index]);
+      });
+      return images;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<List<AnimeReviewsModel>?> getMangaReviews() async {
+    final url = 'https://api.jikan.moe/v4/manga/$id/reviews';
+    try {
+      final response = await http.get(Uri.parse(url));
+      final reviews = List.generate(
+          (jsonDecode(response.body)['data'] as List<dynamic>).length, (index) {
+        return AnimeReviewsModel.fromJson(
+          jsonDecode(response.body)['data'][index],
+          jsonDecode(response.body)['pagination']['has_next_page'],
+        );
+      });
+      return reviews;
     } catch (e) {
       print(e.toString());
       return null;
